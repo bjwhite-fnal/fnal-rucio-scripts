@@ -4,10 +4,10 @@
 #default_prefix=/pnfs/fnal.gov/usr/$EXPERIMENT/scratch/users/bjwhite/rucio_test
 
 # Integration prefix. Volatile storage, files will be deleted (~30 day lifetime according to Dmitry)
-default_prefix=/pnfs/fnal.gov/usr/fermilab/volatile/rucio-int
+#default_prefix=/pnfs/fnal.gov/usr/fermilab/volatile/rucio-int
 
 # ICARUS Prefix
-#default_prefix=/pnfs/fnal.gov/usr/icarus/persistent/icaruspro/rucio_test
+default_prefix=/pnfs/fnal.gov/usr/icarus/persistent/icaruspro/rucio_test
 
 echo "Adding RSE's"
 rucio-admin rse add DCACHE_BJWHITE_START
@@ -44,6 +44,7 @@ sleep 5
 
 echo "Adding FTS3 RSE attributes"
 rucio-admin rse set-attribute --rse DCACHE_BJWHITE_START --key fts --value https://fts-dev.fnal.gov:8446
+rucio-admin rse set-attribute --rse DCACHE_BJWHITE_START --key greedyDeletion --value True
 rucio-admin rse set-attribute --rse DCACHE_BJWHITE_END --key fts --value https://fts-dev.fnal.gov:8446
 rucio-admin rse set-attribute --rse DCACHE_BJWHITE_END --key greedyDeletion --value True
 echo
