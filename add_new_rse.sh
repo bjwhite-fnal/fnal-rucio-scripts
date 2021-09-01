@@ -8,6 +8,7 @@ usage(){
     echo -e "\taccount: The Rucio account to perform the operation as. (Includes setting the limits for this account)"
     echo -e "\thostname: The hostname that is to be used for connections to the new RSE."
     echo -e "\tport: The port number for connections to the new RSE (usually dependent on the protocol being used.)"
+    echo -e "\tprotocol: The protocol to be used. (--scheme option to rucio-admin rse add-protocol)"
     echo -e "\tprefix: The part of the URL that comes after the hostname/port and before the Rucio generated part of the path.\
         Determines where Rucio managed storage for the RSE will reside on the target filesystem."
     echo -e "\trse: The name of the RSE to be added. Convention is to use all capital letters."
@@ -53,7 +54,7 @@ if [ -z ${rse} ]; then
 fi
 
 # TODO: Make this another parameter?
-fts="https://fts3-dev.fnal.gov:8446"
+fts="https://fts-dev.fnal.gov:8446"
 if [ -z ${fts} ]; then
     echo "Please provide a URL for the FTS3 instance to be used for transfer management."
     exit 1
