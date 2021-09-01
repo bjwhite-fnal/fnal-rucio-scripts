@@ -11,6 +11,8 @@ usage(){
     exit 1
 }
 
+#"declare_suspicious_file_replicas"
+
 actions=(
     "add_account"
     "del_account"
@@ -26,7 +28,6 @@ actions=(
     "add_qos_policy"
     "delete_qos_policy"
     "declare_bad_file_replicas"
-    "declare_suspicious_file_replicas"
     "add_replicas"
     "delete_replicas"
     "skip_availability_check"
@@ -88,6 +89,8 @@ actions=(
     "del_identity"
     "remove_did_from_followed"
     "remove_dids_from_followed"
+    "add_distance"
+    "update_distance"
 )
 
 [[ $# -eq 0 ]] && usage
