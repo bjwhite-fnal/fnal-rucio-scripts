@@ -67,6 +67,7 @@ if [[ ${dry_run} == false ]]; then
     fi
 fi
 
+all_done=0
 # Subscribe to the STOMP broker and wait for notifiations that the transfers have been completed
 # TODO
 #
@@ -78,7 +79,7 @@ fi
 #    fi
 #done
 
-all_done=0
-if [ $all_done == 0 ]; then
+all_done=1
+if [ $all_done == 1 ]; then
     rm -r $data_dir
 fi
