@@ -1,74 +1,81 @@
 #!/bin/bash
 
 # This script tests that Rucio is taking file uploads, and transferring files appropriately
-experiment=${1:-int}
-start_rse=${2:-DCACHE_BJWHITE_START}
-end_rse=${3:-DCACHE_BJWHITE_END}
-cert=${5:-/tmp/x509up_u}
-key=${6:-/tmp/x509up_u}
 
-topic=${7:-/topic/rucio.events.}
-durable=${8:-false}
-unsubscribe=${9:-false}
-debug=${10:-false}
-dry_run=${11:-true}
+# STOMP listener script configuration
+experiment=${1:-int}
+cert=${2:-/tmp/x509up_u}
+key=${3:-/tmp/x509up_u}
+
+topic=${4:-/topic/rucio.events.}
+durable=${5:-false}
+unsubscribe=${6:-false}
+debug=${7:-false}
+dry_run=${8:-true}
 
 host=${experiment}-msg-rucio.okd.fnal.gov
 cert=${cert}$(id -u)
 key=${key}$(id -u)
 topic=${topic}${experiment}
 
+printf "Listener settings:\n\texperiment: ${experiment}\n\tcert: ${cert}\n\tkey: ${key}\n\ttopic: ${topic}\n\tdurable: ${durable}\n\tunsubscribe: ${unsubscribe}\n\tdebug: ${debug}\n\n"
+
+# Rucio Configuration
+start_rse=${9:-DCACHE_BJWHITE_START}
+end_rse=${10:-DCACHE_BJWHITE_END}
+dataset_name=rucio_transfer_test_$(uuidgen)
+rucio_user=root # This should be the experiment production user eventually to get this to run automatically on OKD
+
+printf "Rucio settings:\n\tStart RSE: ${start_rse}\n\tEnd RSE: ${end_rse}\n\tDataset name: ${dataset_name}\n\tRucio user: ${rucio_user}\n\n"
+
+# Settings controlling the number and size of files to generate
+data_dir=/tmp/rucio_status_test.$(uuidgen)
+START=0
+END=0
+file_size=1024
+num_files="$((END-START+1))"
+
+printf "Data settings:\n\tData directory: ${data_dir}\n\tNum files: ${num_files}\n\n"
 
 if [[ ! $dry_run == true ]]; then
     dry_run=false
 fi
 
 
-echo ${dry_run}
-data_dir=/tmp/rucio_status_test.$(uuidgen)
-dataset_name=rucio_transfer_test_$(uuidgen)
-num_files=5
-rucio_user=icaruspro
-
-# Settings controlling the number and size of files to generate
-START=0
-END=0
-file_size=1024
-
-echo "Using data dir: ${data_dir}"
+printf "Using data dir: ${data_dir}\n"
 mkdir ${data_dir}
  
-echo "Generating files to be uploaded."
+printf "Generating files to be uploaded.\n"
 for (( c=$START; c<=$END; c++ ))
 do
     name=$(uuidgen)
     if ! dd if=/dev/zero of=$data_dir/$name bs=$file_size count=1 > /dev/null 2>&1; then
-        echo "Error during generation of data file: ${?}"
+        printf "Error during generation of data file: ${?}\n"
         exit 1
     fi
-    echo "Files generated"
+    printf "Files generated\n"
 done
 
 # Upload the test files into Rucio
 for f in $(ls ${data_dir}); do
     if [[ ${dry_run} == false ]]; then
-        echo "Uploading ${data_dir}/${f} to ${start_rse}"
+        printf "Uploading ${data_dir}/${f} to ${start_rse}\n"
         if ! rucio -a ${rucio_user} upload --rse $start_rse $data_dir/$f; then
             exit 1
         fi
-        echo "Uploaded test files to ${start_rse} RSE."
+        printf "Uploaded test files to ${start_rse} RSE.\n"
     fi
 done
 
 # Add a dataset for the files
 # First create DID file
 for f in $(ls $data_dir); do
-    echo "Adding DID to: ${data_dir}/tmdids"
+    printf "Adding DID to: ${data_dir}/tmdids\n"
     echo "user.${rucio_user}:${f}" >> ${data_dir}/tmpdids
 done
 
 if [[ ${dry_run} == false ]]; then
-    echo "Creating dataset ${dataset_name} and adding files"
+    printf "Creating dataset ${dataset_name} and adding files\n"
     rucio add-dataset user.${rucio_user}:${dataset_name}
     if ! rucio -a ${rucio_user} attach user.${rucio_user}:${dataset_name} -f ${data_dir}/tmpdids; then
         exit 1
@@ -77,7 +84,7 @@ fi
 
 # Add rule to move the dataset from $start_rse to $end_rse
 if [[ ${dry_run} == false ]]; then
-    echo "Making a rule to start the transfer of user.${rucio_user}:${dataset_name} from ${start_rse} -> ${end_rse}"
+    printf "Making a rule to start the transfer of user.${rucio_user}:${dataset_name} from ${start_rse} -> ${end_rse}\n"
     if ! rucio -a ${rucio_user} add-rule user.${rucio_user}:${dataset_name} 1 ${end_rse}; then
         exit 1
     fi
