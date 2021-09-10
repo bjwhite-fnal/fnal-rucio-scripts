@@ -1,12 +1,28 @@
 #!/bin/bash
 
 # This script tests that Rucio is taking file uploads, and transferring files appropriately
-start_rse=${1:-DCACHE_BJWHITE_START}
-end_rse=${2:-DCACHE_BJWHITE_END}
-dry_run=${3:-true}
+experiment=${1:-int}
+start_rse=${2:-DCACHE_BJWHITE_START}
+end_rse=${3:-DCACHE_BJWHITE_END}
+cert=${5:-/tmp/x509up_u}
+key=${6:-/tmp/x509up_u}
+
+topic=${7:-/topic/rucio.events.}
+durable=${8:-false}
+unsubscribe=${9:-false}
+debug=${10:-false}
+dry_run=${11:-true}
+
+host=${experiment}-msg-rucio.okd.fnal.gov
+cert=${cert}$(id -u)
+key=${key}$(id -u)
+topic=${topic}${experiment}
+
+
 if [[ ! $dry_run == true ]]; then
     dry_run=false
 fi
+
 
 echo ${dry_run}
 data_dir=/tmp/rucio_status_test.$(uuidgen)
@@ -70,14 +86,19 @@ fi
 all_done=0
 # Subscribe to the STOMP broker and wait for notifiations that the transfers have been completed
 # TODO
+# Arguments to the Python script that will actually subscribe and listen
 #
-# Check file locations include both ${start_rse} and ${end_rse}
-#echo "Printing the file replicas for verification"
-#for f in $(ls $data_dir); do
-#    if ! rucio -a ${rucio_user} list-file-replicas user.root:$f; then
-#        exit 1
-#    fi
-#done
+if [[ ${dry_run} == false ]]; then
+    python listen_for_event.py host \
+        --cert ${cert} \
+        --key ${key} \
+        --topic ${topic} \
+        --durable ${durable} \
+        --unsubscribe ${unsubscribe} \
+        --debug ${debug}
+fi
+
+
 
 all_done=1
 if [ $all_done == 1 ]; then
