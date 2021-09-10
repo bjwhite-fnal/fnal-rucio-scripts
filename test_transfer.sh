@@ -41,6 +41,24 @@ if [[ ! $dry_run == true ]]; then
     dry_run=false
 fi
 
+if [[ ! $durable == true ]]; then
+    durable=True
+else
+    durable=False
+fi
+
+if [[ ! $unsubscribe == true ]]; then
+    unsubscribe=True
+else
+    unsubscribe=False
+fi
+
+if [[ ! $debug == true ]]; then
+    debug=True
+else
+    debug=False
+fi
+
 
 printf "Using data dir: ${data_dir}\n"
 mkdir ${data_dir}
@@ -95,15 +113,15 @@ all_done=0
 # TODO
 # Arguments to the Python script that will actually subscribe and listen
 #
-if [[ ${dry_run} == false ]]; then
-    python listen_for_event.py host \
-        --cert ${cert} \
-        --key ${key} \
-        --topic ${topic} \
-        --durable ${durable} \
-        --unsubscribe ${unsubscribe} \
-        --debug ${debug}
-fi
+#if [[ ${dry_run} == false ]]; then
+python listen_for_event.py host \
+    --cert ${cert} \
+    --key ${key} \
+    --topic ${topic} \
+    --durable ${durable} \
+    --unsubscribe ${unsubscribe} \
+    --debug ${debug}
+#fi
 
 
 

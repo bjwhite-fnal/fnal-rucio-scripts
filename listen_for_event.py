@@ -3,7 +3,7 @@ import sys
 import os
 import json
 import argparse
-import Queue
+import queue
 import threading
 import logging
 import stomp
