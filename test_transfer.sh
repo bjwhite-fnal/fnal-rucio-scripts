@@ -6,14 +6,14 @@
 experiment=${1:-int}
 cert=${2:-/tmp/x509up_u}
 key=${3:-/tmp/x509up_u}
-
+listen_event=????????????
 topic=${4:-/topic/rucio.events.}
 durable=${5:-false}
 unsubscribe=${6:-false}
 debug=${7:-false}
-dry_run=${8:-true}
+dry_run=${8:-false}
 
-host=${experiment}-msg-rucio.okd.fnal.gov
+host=msg-${experiment}-rucio.okd.fnal.gov:443
 cert=${cert}$(id -u)
 key=${key}$(id -u)
 topic=${topic}${experiment}
@@ -114,13 +114,14 @@ all_done=0
 # Arguments to the Python script that will actually subscribe and listen
 #
 #if [[ ${dry_run} == false ]]; then
-python listen_for_event.py host \
+python listen_for_event.py ${host} \
+    --listen-event ${listen_event} \
     --cert ${cert} \
     --key ${key} \
     --topic ${topic} \
-    --durable ${durable} \
-    --unsubscribe ${unsubscribe} \
-    --debug ${debug}
+    #--durable ${durable} \
+    #--unsubscribe ${unsubscribe} \
+    #--debug ${debug}
 #fi
 
 
