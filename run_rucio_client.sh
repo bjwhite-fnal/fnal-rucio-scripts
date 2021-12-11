@@ -13,7 +13,7 @@ if [[ $? != 0 ]]; then
 fi
 
 experiment=${1:-int}
-rucio_account=${1:-root}
+rucio_account=${2:-root}
 
 if [[ $experiment == "int" ]]; then
 	server_host=https://int-rucio.okd.fnal.gov:443
