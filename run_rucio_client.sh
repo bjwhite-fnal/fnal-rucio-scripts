@@ -30,7 +30,9 @@ elif [[ $experiment == "icarus" ]]; then
 elif [[ $experiment == "rubin" ]]; then
 	server_host=https://rucio-eval01.slac.stanford.edu:8443
 	auth_host=https://rucio-eval01.slac.stanford.edu:8443
-	rucio_account=${rucio_account}
+	if [[ ${rucio_account} == "root" ]]; then
+		rucio_account=bjwhite
+	fi
 	ssh ${user}@${fermihost} voms-proxy-init -rfc -noregen -voms lsst
 else
 	echo "Set the experiment... Dying."
@@ -41,7 +43,7 @@ fi
 scp ${user}@${fermihost}:/tmp/${cert} .
 chmod 600 ${PWD}/${cert}
 
-container=$(docker run \
+container=$(podman run \
 	-e RUCIO_CFG_RUCIO_HOST=${server_host} \
 	-e RUCIO_CFG_AUTH_HOST=${auth_host} \
 	-e RUCIO_CFG_AUTH_TYPE=x509 \
@@ -50,6 +52,6 @@ container=$(docker run \
 	-e RUCIO_CFG_ACCOUNT=${rucio_account} \
 	--name=rucio-client-${experiment} \
 	-it -d rucio/rucio-clients)
-# Easiest way to get the Rucio client cert into the container is to just `docker cp`
-docker cp ${cert} ${container}:/opt/rucio/etc/usercert.pem
-docker cp ${cert} ${container}:/opt/rucio/etc/userkey.pem
+# Easiest way to get the Rucio client cert into the container is to just `podman cp`
+podman cp ${cert} ${container}:/opt/rucio/etc/usercert.pem
+podman cp ${cert} ${container}:/opt/rucio/etc/userkey.pem
