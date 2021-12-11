@@ -55,3 +55,6 @@ container=$(podman run \
 # Easiest way to get the Rucio client cert into the container is to just `podman cp`
 podman cp ${cert} ${container}:/opt/rucio/etc/usercert.pem
 podman cp ${cert} ${container}:/opt/rucio/etc/userkey.pem
+
+# Clean up the X509 proxy.
+rm ${cert}
