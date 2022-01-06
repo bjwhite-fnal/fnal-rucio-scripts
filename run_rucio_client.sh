@@ -1,19 +1,25 @@
 #!/bin/bash
 
-user=bjwhite
-id=51660
-fermihost=fermicloud523.fnal.gov
+# Start a Rucio client container
+# ./run_rucio_client <experiment> <rucio_account> <user> <id> <fermihost>
+#
+# Brandon White (bjwhite@fnal.gov)
 
-echo "Making sure there is a x509 proxy for ${user} (id: ${id}) on ${fermihost}"
+experiment=${1:-int}
+rucio_account=${2:-root}
+user=${3:-bjwhite}
+id=${4:-51660}
+fermihost=${5:-fermicloud523.fnal.gov}
+
+cert=x509up_u${id}
+
+echo "Making sure there is a x509 proxy for ${user} (id: ${id}) on ${fermihost} at /tmp/${cert}"
 ssh ${user}@${fermihost} "sh -c voms-proxy-destroy; kx509"
 if [[ $? != 0 ]]; then
 	echo "Error initializing x509 certificate for ${user} on ${fermihost}"
 	exit -1
 fi
 
-experiment=${1:-int}
-rucio_account=${2:-root}
-cert=x509up_u${id}
 
 if [[ $experiment == "int" ]]; then
 	server_host=https://int-rucio.okd.fnal.gov:443
