@@ -1,12 +1,11 @@
 #!/bin/bash
 
-cert=x509up_u51660
 user=bjwhite
+id=51660
 fermihost=fermicloud523.fnal.gov
-echo "Using local certificate ${cert}"
 
-echo "Making sure there is a x509 proxy for ${user} on ${fermihost}"
-ssh ${user}@${fermihost} "sh -c kx509"
+echo "Making sure there is a x509 proxy for ${user} (id: ${id}) on ${fermihost}"
+ssh ${user}@${fermihost} "sh -c voms-proxy-destroy; kx509"
 if [[ $? != 0 ]]; then
 	echo "Error initializing x509 certificate for ${user} on ${fermihost}"
 	exit -1
@@ -14,6 +13,7 @@ fi
 
 experiment=${1:-int}
 rucio_account=${2:-root}
+cert=x509up_u${id}
 
 if [[ $experiment == "int" ]]; then
 	server_host=https://int-rucio.okd.fnal.gov:443
@@ -40,24 +40,19 @@ else
 	exit -1
 fi
 
-
-scp ${user}@${fermihost}:/tmp/${cert} .
+scp ${user}@${fermihost}:/tmp/${cert} ${PWD}
 chmod 600 ${PWD}/${cert}
 
 container=$(podman run \
 	-e RUCIO_CFG_RUCIO_HOST=${server_host} \
 	-e RUCIO_CFG_AUTH_HOST=${auth_host} \
-	-e RUCIO_CFG_AUTH_TYPE=x509 \
-	-e RUCIO_CFG_CLIENT_CERT=/opt/rucio/etc/usercert.pem \
-	-e RUCIO_CFG_CLIENT_KEY=/opt/rucio/etc/userkey.pem \
-        -e X509_USER_PROXY=/tmp/x509up_u1000 \
+	-e RUCIO_CFG_AUTH_TYPE=x509_proxy \
+        -e RUCIO_CFG_CLIENT_X509_PROXY=/tmp/x509up_u1000 \
 	-e RUCIO_CFG_ACCOUNT=${rucio_account} \
 	--name=rucio-client-${experiment} \
 	-it -d rucio/rucio-clients)
 # Easiest way to get the Rucio client cert into the container is to just `podman cp`
-podman cp ${cert} ${container}:/opt/rucio/etc/usercert.pem
-podman cp ${cert} ${container}:/opt/rucio/etc/userkey.pem
-podman cp ${cert} ${container}:/tmp/x509up_u1000
+podman cp ${PWD}/${cert} ${container}:/tmp/x509up_u1000
 
 # Clean up the X509 proxy.
-rm ${cert}
+rm ${PWD}/${cert}
