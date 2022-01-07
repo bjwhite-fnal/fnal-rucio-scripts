@@ -46,7 +46,9 @@ else
 	exit -1
 fi
 
+# Grab the proxy from the remote machine and the OSG certificates
 scp ${user}@${fermihost}:/tmp/${cert} ${PWD}
+scp -r ${user}@${fermihost}:/etc/grid-security/certificates ${PWD}
 chmod 600 ${PWD}/${cert}
 
 container=$(podman run \
@@ -57,8 +59,9 @@ container=$(podman run \
 	-e RUCIO_CFG_ACCOUNT=${rucio_account} \
 	--name=rucio-client-${experiment} \
 	-it -d rucio/rucio-clients)
-# Easiest way to get the Rucio client cert into the container is to just `podman cp`
+# Easiest way to get the Rucio client cert and OSG certificates into the container is to just `podman cp`
 podman cp ${PWD}/${cert} ${container}:/tmp/x509up_u1000
+podman cp ${PWD}/certificates ${container}:/etc/grid-security/certificates
 
 # Clean up the X509 proxy.
 rm ${PWD}/${cert}
