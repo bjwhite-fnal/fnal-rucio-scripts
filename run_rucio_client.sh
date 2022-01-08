@@ -5,6 +5,33 @@
 #
 # Brandon White (bjwhite@fnal.gov)
 
+usage()
+{
+    echo "Hello, I'm here to make your life suck less by easily starting Rucio clients for you."
+    echo
+    echo "Syntax: run_rucio_client.sh <experiment> <rucio_account> <user> <id> <fermihost> -h"
+    echo -e "\tPositional (note that they are positional, defaults provided according to the whim of bjwhite)"
+    echo -e "\texperiment     The experiment designation (duh). Default: int"
+    echo -e "\trucio_account     Account to be used for Rucio. Default: root"
+    echo -e "\tuser     FNAL Linux username used for ssh. Default: bjwhite"
+    echo -e "\tid     FNAL user id number. Default: 51660"
+    echo -e "\tfermihost     Fermilab machine to use for remote access to proxy initialization and grid certificates. Default: fermicloud523.fnal.gov"
+    echo
+    echo -e "\tOptional"
+    echo -e "\t-h    Display help"
+    echo
+}
+
+if [ $OPTIND -eq 1 ]; then usage; exit; fi
+while getopts ":h" option; do
+   case $option in
+      h) # display Help
+         usage
+         exit;;
+   esac
+done
+
+# Arguments
 experiment=${1:-int}
 rucio_account=${2:-root}
 user=${3:-bjwhite}
