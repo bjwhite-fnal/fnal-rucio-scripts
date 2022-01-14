@@ -22,7 +22,7 @@ usage()
     echo
 }
 
-if [ $OPTIND -eq 1 ]; then usage; exit; fi
+if [ $OPTIND -eq -1 ]; then usage; exit; fi
 while getopts ":h" option; do
    case $option in
       h) # display Help
