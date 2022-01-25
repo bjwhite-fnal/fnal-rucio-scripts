@@ -53,8 +53,8 @@ if [[ $experiment == "int" ]]; then
 	auth_host=https://auth-int-rucio.okd.fnal.gov:443
 	rucio_account=${rucio_account}
 elif [[ $experiment == "dune" ]]; then
-	server_host=https://dune-rucio.okd.fnal.gov:443
-	auth_host=https://auth-dune-rucio.okd.fnal.gov:443
+	server_host=https://dune-rucio.fnal.gov:443
+	auth_host=https://auth-dune-rucio.fnal.gov:443
 	rucio_account=${rucio_account}
 elif [[ $experiment == "icarus" ]]; then
 	server_host=https://icarus-rucio.okd.fnal.gov:443
