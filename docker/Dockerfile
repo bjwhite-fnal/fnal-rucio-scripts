@@ -1,27 +1,10 @@
 # Dockerfile for customizations to the Rucio client
 # Generate an experiment appropriate VOMS proxy inside the container
 # Brandon White <bjwhite@fnal.gov> 2022
+ARG rucio_version
 
-FROM rucio/rucio-clients
+FROM rucio/rucio-clients:release-${rucio_version}
 
-# We have to copy the certificates because we cannot change permissions on them as mounted secrets and
-# voms-proxy is particular about permissions
-echo -e "Generating proxy..."
-cp /opt/certs/hostcert.pem /tmp/cert.pem
-cp /opt/certs/hostkey.pem /tmp/key.pem
-chmod 400 /tmp/key.pem
+ADD docker-entrypoint.sh /opt/docker-entrypoint.sh
 
-# Generate a proxy with the voms extension if requested
-voms-proxy-init --debug \
-    -rfc \
-    -valid 96:00 \
-    -cert /tmp/cert.pem \
-    -key /tmp/key.pem \
-    -out /tmp/x509up \
-    -voms ${VOMS_STR} \
-    -timeout 5
-
-mkdir /opt/proxy
-cp /tmp/x509up /opt/proxy/x509up
-
-/bin/bash
+ENTRYPOINT ['/opt/docker-entrypoint.sh']
