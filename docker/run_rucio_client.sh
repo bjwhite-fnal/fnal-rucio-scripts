@@ -71,7 +71,8 @@ container=$(podman run \
         -e RUCIO_CFG_CLIENT_X509_PROXY=/tmp/x509up_u1000 \
 	-e RUCIO_CFG_ACCOUNT=${rucio_account} \
         -e VOMS_STR=${voms_str} \
-        -v ./${cert}:/opt/certs/hostcert.pem \
-        -v ./${cert}:/opt/certs/hostkey.pem \
+        -v ${cert}:/opt/certs/hostcert.pem \
+        -v ${cert}:/opt/certs/hostkey.pem \
 	--name=rucio-client-${experiment} \
 	-it -d donkeyman)
+podman cp ${PWD}/certificates ${container}:/etc/grid-security/certificates

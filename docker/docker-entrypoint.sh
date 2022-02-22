@@ -16,7 +16,6 @@ voms-proxy-init --debug \
     -voms ${VOMS_STR} \
     -timeout 5
 
-mkdir /opt/proxy
 cp /tmp/x509up /opt/proxy/x509up
 
 while [ 1 ]

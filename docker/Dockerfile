@@ -5,6 +5,9 @@ ARG rucio_version
 
 FROM rucio/rucio-clients:release-${rucio_version}
 
-ADD docker-entrypoint.sh /opt/docker-entrypoint.sh
+ADD docker-entrypoint.sh /docker-entrypoint.sh
+USER root
+RUN mkdir /opt/proxy
+USER 1000
 
-ENTRYPOINT ['/opt/docker-entrypoint.sh']
+ENTRYPOINT /docker-entrypoint.sh
