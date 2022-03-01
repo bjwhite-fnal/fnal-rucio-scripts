@@ -1,6 +1,6 @@
 #!/bin/bash
 export DOCKER_BUILDKIT=1
-export ocirunner=docker
+export ocirunner=podman
 
 ver="1.26.9"
 

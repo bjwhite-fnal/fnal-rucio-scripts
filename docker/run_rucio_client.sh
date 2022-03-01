@@ -15,7 +15,7 @@ usage()
     echo -e "\trucio_account     Account to be used for Rucio. Default: root"
     echo -e "\tuser     FNAL Linux username used for ssh. Default: bjwhite"
     echo -e "\tid     FNAL user id number. Default: 51660"
-    echo -e "\tocirunner     podman or docker. Default: docker"
+    echo -e "\tocirunner     podman or docker. Default: podman"
     echo
     echo -e "\tOptional"
     echo -e "\t-h    Display help"
@@ -36,7 +36,7 @@ experiment=${1:-int}
 rucio_account=${2:-root}
 user=${3:-bjwhite}
 id=${4:-51660}
-ocirunner=${5:-docker}
+ocirunner=${5:-podman}
 cert=x509up_u${id}
 rucio_account=${rucio_account}
 
@@ -71,7 +71,8 @@ container=$(${ocirunner} run \
         -e RUCIO_CFG_CLIENT_X509_PROXY=/tmp/x509up_u1000 \
 	-e RUCIO_CFG_ACCOUNT=${rucio_account} \
         -e VOMS_STR=${voms_str} \
-        -v certs:/opt/certs:Z \
+        -v /tmp/${cert}:/opt/certs/hostcert.pem \
+        -v /tmp/${cert}:/opt/certs/hostkey.pem \
 	--name=rucio-client-${experiment} \
 	-it -d donkeyman)
 ${ocirunner} cp ${PWD}/certificates ${container}:/etc/grid-security/certificates
