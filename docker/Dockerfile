@@ -8,6 +8,7 @@ FROM rucio/rucio-clients:release-${rucio_version}
 ADD docker-entrypoint.sh /docker-entrypoint.sh
 USER root
 RUN mkdir /opt/proxy
+ADD vomses /etc/vomses
 USER 1000
 
 ENTRYPOINT /docker-entrypoint.sh

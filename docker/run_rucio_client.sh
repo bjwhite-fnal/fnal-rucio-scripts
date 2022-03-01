@@ -68,11 +68,11 @@ container=$(${ocirunner} run \
 	-e RUCIO_CFG_RUCIO_HOST=${server_host} \
 	-e RUCIO_CFG_AUTH_HOST=${auth_host} \
 	-e RUCIO_CFG_AUTH_TYPE=x509_proxy \
-        -e RUCIO_CFG_CLIENT_X509_PROXY=/tmp/x509up_u1000 \
+        -e RUCIO_CFG_CLIENT_X509_PROXY=${cert} \
 	-e RUCIO_CFG_ACCOUNT=${rucio_account} \
+        -e PROXY_USER_ID=${id} \
         -e VOMS_STR=${voms_str} \
-        -v /tmp/${cert}:/opt/certs/hostcert.pem \
-        -v /tmp/${cert}:/opt/certs/hostkey.pem \
+        -v /tmp/cert:/opt/certs \
+        -v /tmp/grid-security:/etc/grid-security \
 	--name=rucio-client-${experiment} \
 	-it -d donkeyman)
-${ocirunner} cp ${PWD}/certificates ${container}:/etc/grid-security/certificates
