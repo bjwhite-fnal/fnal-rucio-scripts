@@ -4,6 +4,7 @@
 echo -e "Generating proxy..."
 cp /opt/certs/x509up_u${PROXY_USER_ID} /tmp/cert.pem
 cp /opt/certs/x509up_u${PROXY_USER_ID} /tmp/key.pem
+chmod 600 /tmp/cert.pem
 chmod 400 /tmp/key.pem
 
 # Generate a proxy with the voms extension if requested
