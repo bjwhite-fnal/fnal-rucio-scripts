@@ -72,7 +72,7 @@ container=$(${ocirunner} run \
 	-e RUCIO_CFG_ACCOUNT=${rucio_account} \
         -e PROXY_USER_ID=${id} \
         -e VOMS_STR=${voms_str} \
-        -v /tmp/cert:/opt/certs \
+        -v /tmp/cert:/opt/certs:Z \
         -v /tmp/grid-security:/etc/grid-security \
 	--name=rucio-client-${experiment} \
 	-it -d donkeyman)
